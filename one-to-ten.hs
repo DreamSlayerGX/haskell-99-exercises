@@ -19,6 +19,7 @@ myLast'' :: [a] -> a
 myLast'' = foldr1 $ const id
 -- flip const :: a -> b -> b
 
+
 -- (2) Find the last but one element of a list
 myButLast :: [a] -> a
 myButLast (x:[xs]) = x
@@ -37,6 +38,7 @@ myButLast'' = snd . foldl (\(a,b) x -> (Just x, a)) (Nothing, Nothing)
 -- (Just 3, Just 2) 4
 -- (Just 4, Just 3)
 
+
 -- (3) Find the K'th element of a list. The first element in the list is number 1.
 elementAt :: [a] -> Int -> a
 elementAt (x:_) 1 = x
@@ -47,8 +49,6 @@ elementAt [] _ = errorEmptyList "elementAt"
 elementAt' :: [a] -> Int -> a
 elementAt' l n = fst . last $ zip l [1..n]
 
-
-
 elementAt'' :: [a] -> Int -> a
 elementAt'' l i = l !! (i-1)
 
@@ -57,6 +57,7 @@ elementAt''' l i = head $ drop (i-1) l
 
 elementAt'''' :: Int -> [a] -> a
 elementAt'''' = (last .) . take . (+ 1)
+
 
 -- (4) Find the number of elements of a list. 
 myLength :: [a] -> Int
@@ -70,6 +71,7 @@ myLength'' :: [a] -> Int
 myLength'' = fst . last . zip [1..]
 -- take the n:th element of the endless integer list in zip
 -- [(1,a),(2,a') ... (n,a'')] -> (n,a'') -> n
+
 
 -- (5) Reverse a list.
 myReverse :: [a] -> [a]
@@ -96,7 +98,6 @@ myReverse'' = foldl (flip (:)) []
 -- (6) Find out whether a list is a palindrome. A palindrome can be read forward or backward; e.g. (x a m a x).
 isPalindrome :: Eq a => [a] -> Bool
 isPalindrome l =  and . zipWith (==) l $ reverse l
-
 
 isPalindrome' :: Eq a => [a] -> Bool
 isPalindrome' xs = and [x == rx | (x, rx) <- zip xs $ reverse xs]
