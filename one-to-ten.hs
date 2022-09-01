@@ -140,10 +140,46 @@ compress'' = map head . group
 
 -- (9) Pack consecutive duplicates of list elements into sublists. If a list contains repeated elements they should be placed in separate sublists. 
 pack :: Eq a => [a] -> [[a]]
-pack [] = [[]]
+pack [] = []
 pack (x:xs) = takeWhile (== x) (x:xs) : pack (dropWhile (== x) xs)
--- gives an empty end (["aaaa","b","cc","aa","d","eeee",""])
 
--- pack ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e']
--- ["aaaa","b","cc","aa","d","eeee"]
+pack' :: Eq a => [a] -> [[a]]
+pack' = foldr f []
+    where
+        f x [] = [[x]] -- This defines the result of :ys, i.e. [[x]]
+        f x (y:ys)
+            | x == head y = (x : y) : ys
+            | otherwise =  [x]:y:ys
+-- f 1 ( f 1 (f 2 []))
+-- f 2 [] = [[2]]
+-- f 1 [[2]] = f 1 [2]:[] = [1] : [2] : [] = [[1], [2]]
+-- f 1 [[1], [2]] = f 1 [1]:[[2]] = (1 : [1]) : [[2]] = [1,1]:[[2]]
 
+pack'' :: Eq a => [a] -> [[a]]
+pack'' [] = []
+pack'' (x:xs) = let (first,rest) = span (==x) xs
+    in (x:first) : pack rest
+
+
+-- (10) Run-length encoding of a list. Use the result of problem P09 to implement the so-called run-length encoding data compression method. Consecutive duplicates of elements are encoded as lists (N E) where N is the number of duplicates of the element E.
+encode :: Eq a => [a] -> [(Int, a)]
+encode xs = package $ pack xs
+    where
+        package :: [[a]] -> [(Int, a)]
+        package [] = []
+        package (x:xs) = (length x, head x) : package xs
+
+encode' :: Eq a => [a] -> [(Int, a)]
+encode' = map (\x -> (length x, head x)) . pack
+
+encode'' :: Eq a => [a] -> [(Int, a)]
+encode'' xs = [(length x, head x) | x <- pack xs]
+
+encode''' :: Eq a => [a] -> [(Int, a)]
+encode''' = foldr (\x acc -> (length x, head x) : acc) [] . pack
+
+encode'''' :: Eq a => [a] -> [(Int, a)]
+encode'''' xs = zip (map length grouped) chars
+    where
+        grouped = pack xs
+        chars = map head grouped
